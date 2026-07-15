@@ -2,12 +2,17 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-UPLOAD_FOLDER = BASE_DIR / "uploads"
+DATA_DIR = BASE_DIR / "data"
 
-UPLOAD_FOLDER.mkdir(exist_ok=True)
+UPLOAD_FOLDER = DATA_DIR / "uploads"
+CHROMA_DB_PATH = DATA_DIR / "chroma"
+
+UPLOAD_FOLDER.mkdir(parents=True, exist_ok=True)
+CHROMA_DB_PATH.mkdir(parents=True, exist_ok=True)
 
 EMBEDDING_MODEL = "all-MiniLM-L6-v2"
 
-CHROMA_DB_PATH = BASE_DIR / "chroma_db"
+COLLECTION_NAME = "paperlens_documents"
 
-TOP_K = 4
+CHUNK_SIZE = 500
+CHUNK_OVERLAP = 100

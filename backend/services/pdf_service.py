@@ -1,5 +1,5 @@
 from pathlib import Path
-from pypdf import PdfReader
+import fitz  # PyMuPDF
 
 
 class PDFService:
@@ -7,27 +7,30 @@ class PDFService:
     @staticmethod
     def extract_text(pdf_path: str):
 
-        reader = PdfReader(pdf_path)
+        document = fitz.open(pdf_path)
 
         pages = []
-
         full_text = ""
 
-        for page_number, page in enumerate(reader.pages, start=1):
+        for page_index in range(len(document)):
 
-            text = page.extract_text()
+            page = document.load_page(page_index)
 
-            if text is None:
+            text = page.get_text("text")
+
+            if not text:
                 text = ""
 
             pages.append(
                 {
-                    "page": page_number,
+                    "page": page_index + 1,
                     "text": text
                 }
             )
 
             full_text += text + "\n"
+
+        document.close()
 
         return {
             "filename": Path(pdf_path).name,

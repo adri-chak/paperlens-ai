@@ -6,8 +6,14 @@ from fastapi import APIRouter, UploadFile, File, HTTPException
 
 from backend.config import UPLOAD_FOLDER
 from backend.services.pdf_service import PDFService
+from backend.services.chunker import Chunker
+from backend.services.embedding_service import EmbeddingService
+from backend.services.chroma_service import ChromaService
 
 router = APIRouter()
+
+embedder = EmbeddingService()
+vector_db = ChromaService()
 
 
 @router.post("/upload")
@@ -25,11 +31,24 @@ async def upload_pdf(file: UploadFile = File(...)):
 
     extracted = PDFService.extract_text(str(save_path))
 
+    chunks = Chunker.create_chunks(
+        extracted["pages"]
+    )
+
+    embeddings = embedder.embed_chunks(chunks)
+
+    vector_db.add_document(
+        file.filename,
+        chunks,
+        embeddings
+    )
+
     return {
         "status": "success",
         "filename": file.filename,
-        "stored_as": unique_name,
         "pages": len(extracted["pages"]),
-        "characters": len(extracted["full_text"]),
-        "preview": extracted["full_text"][:1000]
+        "chunks_created": len(chunks),
+        "stored_vectors": vector_db.total_chunks(),
+        "embedding_dimension": len(embeddings[0]),
+        "preview": chunks[0]["text"][:300]
     }
