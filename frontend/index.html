@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+    <title>PaperLens AI — Document Intelligence, Reimagined</title>
+    <meta name="description" content="PaperLens AI — AI-powered document intelligence using Retrieval-Augmented Generation. Upload a PDF and ask it anything." />
+    <meta name="robots" content="index, follow" />
+    <meta property="og:title" content="PaperLens AI" />
+    <meta property="og:description" content="AI-Powered Document Intelligence using Retrieval-Augmented Generation (RAG)." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="PaperLens AI" />
+    <meta name="twitter:description" content="AI-Powered Document Intelligence using Retrieval-Augmented Generation (RAG)." />
+    <link rel="icon" type="image/svg+xml" href="./public/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sora:wght@600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+      integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body data-theme="dark">
+    <!-- ================= SKIP LINK (a11y) ================= -->
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+
+    <!-- ================= ANIMATED BACKGROUND ================= -->
+    <div class="bg-scene" aria-hidden="true">
+      <div class="bg-gradient"></div>
+      <div class="blob blob-1"></div>
+      <div class="blob blob-2"></div>
+      <div class="blob blob-3"></div>
+      <div class="bg-grain"></div>
+    </div>
+
+    <!-- ================= HEADER ================= -->
+    <header class="site-header" id="site-header">
+      <div class="header-inner">
+        <a class="brand" href="#main-content" aria-label="PaperLens AI home">
+          <span class="brand-logo" aria-hidden="true">
+            <svg viewBox="0 0 48 48" width="34" height="34" role="img" aria-hidden="true">
+              <defs>
+                <linearGradient id="logoGrad" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stop-color="var(--logo-grad-a)" />
+                  <stop offset="100%" stop-color="var(--logo-grad-b)" />
+                </linearGradient>
+              </defs>
+              <rect x="4" y="3" width="28" height="36" rx="4" fill="url(#logoGrad)" opacity="0.18" />
+              <rect x="4" y="3" width="28" height="36" rx="4" fill="none" stroke="url(#logoGrad)" stroke-width="2" />
+              <line x1="10" y1="13" x2="26" y2="13" stroke="url(#logoGrad)" stroke-width="2" stroke-linecap="round" />
+              <line x1="10" y1="19" x2="26" y2="19" stroke="url(#logoGrad)" stroke-width="2" stroke-linecap="round" />
+              <line x1="10" y1="25" x2="20" y2="25" stroke="url(#logoGrad)" stroke-width="2" stroke-linecap="round" />
+              <circle cx="33" cy="33" r="10" fill="var(--bg-elevated)" stroke="url(#logoGrad)" stroke-width="2.5" />
+              <line x1="40.2" y1="40.2" x2="45" y2="45" stroke="url(#logoGrad)" stroke-width="3" stroke-linecap="round" />
+              <circle cx="33" cy="33" r="3.4" fill="url(#logoGrad)" />
+            </svg>
+          </span>
+          <span class="brand-name">PaperLens<span class="brand-accent">AI</span></span>
+        </a>
+
+        <nav class="main-nav" aria-label="Primary">
+          <a href="#home" class="nav-link is-active">Home</a>
+          <a href="#features" class="nav-link">Features</a>
+          <a href="#about" class="nav-link">About</a>
+        </nav>
+
+        <div class="header-actions">
+          <a
+            class="icon-btn github-btn"
+            href="https://github.com/adri-chak/paperlens-ai"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="View source on GitHub"
+            title="View on GitHub"
+          >
+            <i class="fa-brands fa-github" aria-hidden="true"></i>
+            <span class="github-label">GitHub</span>
+          </a>
+
+          <button
+            class="theme-toggle"
+            id="theme-toggle"
+            type="button"
+            aria-label="Toggle dark and light theme"
+            aria-pressed="false"
+            title="Toggle theme"
+          >
+            <i class="fa-solid fa-sun theme-icon theme-icon-sun" aria-hidden="true"></i>
+            <i class="fa-solid fa-moon theme-icon theme-icon-moon" aria-hidden="true"></i>
+            <span class="theme-toggle-dot"></span>
+          </button>
+
+          <button
+            class="icon-btn mobile-menu-btn"
+            id="mobile-sidebar-btn"
+            type="button"
+            aria-label="Open document sidebar"
+            aria-expanded="false"
+            aria-controls="doc-sidebar"
+          >
+            <i class="fa-solid fa-bars" aria-hidden="true"></i>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- ================= MOBILE SIDEBAR OVERLAY ================= -->
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <div class="app-shell">
+      <!-- ================= SIDEBAR ================= -->
+      <aside class="doc-sidebar" id="doc-sidebar" aria-label="Document and project information">
+        <div class="sidebar-header">
+          <h2><i class="fa-solid fa-layer-group" aria-hidden="true"></i> Workspace</h2>
+          <button class="icon-btn sidebar-close-btn" id="sidebar-close-btn" type="button" aria-label="Close sidebar">
+            <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+          </button>
+        </div>
+
+        <div class="sidebar-section">
+          <h3 class="sidebar-heading">Current Document</h3>
+          <div class="sidebar-doc-card" id="sidebar-doc-card">
+            <div class="sidebar-doc-icon"><i class="fa-solid fa-file-pdf" aria-hidden="true"></i></div>
+            <div class="sidebar-doc-info">
+              <p class="sidebar-doc-name" id="sidebar-doc-name">No document yet</p>
+              <p class="sidebar-doc-sub">Upload a PDF to begin</p>
+            </div>
+          </div>
+
+          <div class="sidebar-stat-grid">
+            <div class="sidebar-stat">
+              <span class="sidebar-stat-label">Pages</span>
+              <span class="sidebar-stat-value" id="sidebar-pages">—</span>
+            </div>
+            <div class="sidebar-stat">
+              <span class="sidebar-stat-label">Chunks</span>
+              <span class="sidebar-stat-value" id="sidebar-chunks">—</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="sidebar-section">
+          <h3 class="sidebar-heading">Intelligence Stack</h3>
+          <ul class="sidebar-stack-list">
+            <li><span class="stack-label"><i class="fa-solid fa-vector-square" aria-hidden="true"></i> Embedding Model</span><span class="stack-value">MiniLM-L6-v2</span></li>
+            <li><span class="stack-label"><i class="fa-solid fa-cubes" aria-hidden="true"></i> Vector Database</span><span class="stack-value">ChromaDB</span></li>
+            <li><span class="stack-label"><i class="fa-solid fa-brain" aria-hidden="true"></i> LLM</span><span class="stack-value">Groq · Llama 3</span></li>
+          </ul>
+        </div>
+
+        <div class="sidebar-section">
+          <h3 class="sidebar-heading">Tech Stack</h3>
+          <div class="sidebar-tags">
+            <span class="tag"><i class="fa-solid fa-bolt" aria-hidden="true"></i> FastAPI</span>
+            <span class="tag"><i class="fa-solid fa-database" aria-hidden="true"></i> ChromaDB</span>
+            <span class="tag"><i class="fa-solid fa-diagram-project" aria-hidden="true"></i> Sentence Transformers</span>
+            <span class="tag"><i class="fa-solid fa-microchip" aria-hidden="true"></i> Groq</span>
+          </div>
+        </div>
+
+        <div class="sidebar-footer-note">
+          <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+          <p>Retrieved answers are grounded strictly in your uploaded document.</p>
+        </div>
+      </aside>
+
+      <!-- ================= MAIN ================= -->
+      <main id="main-content">
+        <!-- ================= HERO ================= -->
+        <section class="hero" id="home">
+          <div class="hero-inner">
+            <p class="eyebrow reveal" data-reveal>
+              <span class="eyebrow-dot" aria-hidden="true"></span>
+              Retrieval-Augmented Generation
+            </p>
+            <h1 class="hero-title reveal" data-reveal>
+              Paper<span class="hero-title-accent">Lens</span> AI
+            </h1>
+            <p class="hero-subtitle reveal" data-reveal>
+              Understand any PDF using AI-powered Retrieval-Augmented Generation.
+              Upload a document, ask a question, get an answer grounded in the source.
+            </p>
+            <div class="hero-cta reveal" data-reveal>
+              <a href="#upload" class="btn btn-primary">
+                <i class="fa-solid fa-cloud-arrow-up" aria-hidden="true"></i>
+                Upload a document
+              </a>
+              <a href="#features" class="btn btn-ghost">
+                Explore features
+                <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+              </a>
+            </div>
+
+            <div class="hero-stats reveal" data-reveal>
+              <div class="hero-stat">
+                <span class="hero-stat-value" data-count="384">0</span>
+                <span class="hero-stat-label">Embedding Dimensions</span>
+              </div>
+              <div class="hero-stat-divider" aria-hidden="true"></div>
+              <div class="hero-stat">
+                <span class="hero-stat-value">Vector Search</span>
+                <span class="hero-stat-label">Semantic Retrieval</span>
+              </div>
+              <div class="hero-stat-divider" aria-hidden="true"></div>
+              <div class="hero-stat">
+                <span class="hero-stat-value">Grounded</span>
+                <span class="hero-stat-label">Cited Sources</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= UPLOAD SECTION ================= -->
+        <section class="section" id="upload">
+          <div class="section-inner">
+            <div class="card upload-card reveal" data-reveal>
+              <div class="card-glow" aria-hidden="true"></div>
+
+              <div class="upload-card-header">
+                <h2><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> Upload your document</h2>
+                <p>PaperLens will chunk, embed, and index your PDF for instant retrieval.</p>
+              </div>
+
+              <!-- Dropzone -->
+              <div
+                class="dropzone"
+                id="dropzone"
+                tabindex="0"
+                role="button"
+                aria-label="Upload a PDF document. Click or drag and drop a file here."
+              >
+                <input type="file" id="file-input" accept="application/pdf" aria-label="Choose a PDF file" hidden />
+                <div class="dropzone-content" id="dropzone-idle">
+                  <div class="dropzone-icon">
+                    <i class="fa-solid fa-file-pdf" aria-hidden="true"></i>
+                  </div>
+                  <p class="dropzone-title">Drag &amp; drop your PDF here</p>
+                  <p class="dropzone-sub">or</p>
+                  <button type="button" class="btn btn-secondary" id="browse-btn">
+                    <i class="fa-solid fa-folder-open" aria-hidden="true"></i>
+                    Browse files
+                  </button>
+                  <p class="dropzone-hint">PDF only · up to 25MB</p>
+                </div>
+
+                <!-- Uploading state -->
+                <div class="dropzone-content is-hidden" id="dropzone-uploading">
+                  <div class="upload-spinner" aria-hidden="true"></div>
+                  <p class="dropzone-title" id="uploading-filename">Processing document…</p>
+                  <div class="progress-track">
+                    <div class="progress-bar" id="progress-bar"></div>
+                  </div>
+                  <p class="dropzone-sub" id="progress-label">Uploading…</p>
+                </div>
+
+                <!-- Success state -->
+                <div class="dropzone-content is-hidden" id="dropzone-success">
+                  <div class="upload-success-icon" aria-hidden="true">
+                    <i class="fa-solid fa-check"></i>
+                  </div>
+                  <p class="dropzone-title">Document indexed successfully</p>
+                  <p class="dropzone-sub" id="success-filename">filename.pdf</p>
+                  <button type="button" class="btn btn-ghost btn-sm" id="upload-another-btn">
+                    <i class="fa-solid fa-arrow-rotate-left" aria-hidden="true"></i>
+                    Upload another
+                  </button>
+                </div>
+              </div>
+
+              <!-- Stats grid (populated after upload) -->
+              <div class="stats-grid is-hidden" id="stats-grid">
+                <div class="stat-card" data-stat="pages">
+                  <div class="stat-icon"><i class="fa-solid fa-file-lines" aria-hidden="true"></i></div>
+                  <span class="stat-value" data-target="0">0</span>
+                  <span class="stat-label">Pages</span>
+                </div>
+                <div class="stat-card" data-stat="chunks">
+                  <div class="stat-icon"><i class="fa-solid fa-puzzle-piece" aria-hidden="true"></i></div>
+                  <span class="stat-value" data-target="0">0</span>
+                  <span class="stat-label">Chunks</span>
+                </div>
+                <div class="stat-card" data-stat="embeddings">
+                  <div class="stat-icon"><i class="fa-solid fa-diagram-project" aria-hidden="true"></i></div>
+                  <span class="stat-value" data-target="0">0</span>
+                  <span class="stat-label">Embedding Dim.</span>
+                </div>
+                <div class="stat-card" data-stat="vectors">
+                  <div class="stat-icon"><i class="fa-solid fa-vector-square" aria-hidden="true"></i></div>
+                  <span class="stat-value" data-target="0">0</span>
+                  <span class="stat-label">Stored Vectors</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= CHAT SECTION ================= -->
+        <section class="section" id="chat-section">
+          <div class="section-inner">
+            <div class="card chat-card reveal" data-reveal>
+              <div class="chat-header">
+                <div class="chat-header-title">
+                  <i class="fa-solid fa-comments" aria-hidden="true"></i>
+                  <div>
+                    <h2>Ask PaperLens</h2>
+                    <p id="chat-context-label">Upload a document to start chatting</p>
+                  </div>
+                </div>
+                <button type="button" class="btn btn-ghost btn-sm" id="clear-chat-btn" title="Clear chat (Ctrl+L)">
+                  <i class="fa-solid fa-trash" aria-hidden="true"></i>
+                  Clear
+                </button>
+              </div>
+
+              <div class="chat-messages" id="chat-messages" role="log" aria-live="polite" aria-label="Chat conversation">
+                <div class="chat-empty-state" id="chat-empty-state">
+                  <div class="chat-empty-icon"><i class="fa-solid fa-wand-magic-sparkles" aria-hidden="true"></i></div>
+                  <p>No conversation yet. Upload a PDF, then ask anything about it.</p>
+                </div>
+              </div>
+
+              <form class="chat-input-form" id="chat-form" autocomplete="off">
+                <label for="chat-input" class="sr-only">Ask a question about your document</label>
+                <textarea
+                  id="chat-input"
+                  class="chat-input"
+                  placeholder="Ask a question about your document…"
+                  rows="1"
+                  aria-label="Chat message"
+                  disabled
+                ></textarea>
+                <button type="submit" class="chat-send-btn" id="chat-send-btn" aria-label="Send message" disabled>
+                  <i class="fa-solid fa-paper-plane" aria-hidden="true"></i>
+                </button>
+              </form>
+              <p class="chat-input-hint"><kbd>Enter</kbd> to send · <kbd>Shift+Enter</kbd> for a new line · <kbd>Ctrl+L</kbd> to clear</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= FEATURES ================= -->
+        <section class="section" id="features">
+          <div class="section-inner">
+            <div class="section-heading reveal" data-reveal>
+              <p class="eyebrow eyebrow-static"><span class="eyebrow-dot" aria-hidden="true"></span>Capabilities</p>
+              <h2>Everything you need to interrogate a document</h2>
+            </div>
+
+            <div class="features-grid">
+              <div class="feature-card reveal" data-reveal>
+                <div class="feature-icon"><i class="fa-solid fa-file-import" aria-hidden="true"></i></div>
+                <h3>Instant ingestion</h3>
+                <p>Drop a PDF and PaperLens chunks, embeds, and indexes it in seconds — no configuration required.</p>
+              </div>
+              <div class="feature-card reveal" data-reveal>
+                <div class="feature-icon"><i class="fa-solid fa-magnifying-glass-chart" aria-hidden="true"></i></div>
+                <h3>Semantic retrieval</h3>
+                <p>Every question triggers a vector search across your document's embeddings — not brittle keyword matching.</p>
+              </div>
+              <div class="feature-card reveal" data-reveal>
+                <div class="feature-icon"><i class="fa-solid fa-quote-left" aria-hidden="true"></i></div>
+                <h3>Grounded, cited answers</h3>
+                <p>Answers come with the exact page and passage they were generated from — always verifiable.</p>
+              </div>
+              <div class="feature-card reveal" data-reveal>
+                <div class="feature-icon"><i class="fa-solid fa-gauge-high" aria-hidden="true"></i></div>
+                <h3>Low-latency inference</h3>
+                <p>Powered by Groq's LPU inference engine for near-instant, high-throughput responses.</p>
+              </div>
+              <div class="feature-card reveal" data-reveal>
+                <div class="feature-icon"><i class="fa-solid fa-lock" aria-hidden="true"></i></div>
+                <h3>Session-scoped context</h3>
+                <p>Your document and conversation stay isolated to your session — nothing lingers longer than it should.</p>
+              </div>
+              <div class="feature-card reveal" data-reveal>
+                <div class="feature-icon"><i class="fa-solid fa-moon" aria-hidden="true"></i></div>
+                <h3>Adaptive theming</h3>
+                <p>A refined dark mode and a warm, paper-toned light mode — both remembered across visits.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= ABOUT ================= -->
+        <section class="section" id="about">
+          <div class="section-inner">
+            <div class="about-grid">
+              <div class="about-copy reveal" data-reveal>
+                <p class="eyebrow eyebrow-static"><span class="eyebrow-dot" aria-hidden="true"></span>About the project</p>
+                <h2>Built on a modern Retrieval-Augmented Generation pipeline</h2>
+                <p>
+                  PaperLens AI turns static PDFs into a conversational knowledge source. When a document is uploaded,
+                  it's split into overlapping chunks, embedded with a sentence-transformer model, and stored inside a
+                  vector database. Every question you ask is embedded the same way, matched against the most relevant
+                  chunks, and passed to a large language model that answers strictly from that retrieved context.
+                </p>
+                <p>
+                  The result: answers that are fast, explainable, and traceable back to the exact page they came from.
+                </p>
+                <ul class="about-list">
+                  <li><i class="fa-solid fa-check" aria-hidden="true"></i> No hallucinated citations — every source is real</li>
+                  <li><i class="fa-solid fa-check" aria-hidden="true"></i> Works with multi-page, text-based PDFs</li>
+                  <li><i class="fa-solid fa-check" aria-hidden="true"></i> Fully client-rendered, framework-free interface</li>
+                </ul>
+              </div>
+              <div class="about-visual reveal" data-reveal aria-hidden="true">
+                <div class="orbit-card orbit-card-1"><i class="fa-solid fa-file-pdf"></i><span>PDF</span></div>
+                <div class="orbit-card orbit-card-2"><i class="fa-solid fa-diagram-project"></i><span>Embeddings</span></div>
+                <div class="orbit-card orbit-card-3"><i class="fa-solid fa-cubes"></i><span>ChromaDB</span></div>
+                <div class="orbit-card orbit-card-4"><i class="fa-solid fa-brain"></i><span>Groq LLM</span></div>
+                <div class="orbit-core"><i class="fa-solid fa-magnifying-glass"></i></div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <!-- ================= FOOTER ================= -->
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <span class="brand-name footer-brand-name">PaperLens<span class="brand-accent">AI</span></span>
+          <p>AI-Powered Document Intelligence using Retrieval-Augmented Generation.</p>
+        </div>
+
+        <div class="footer-col">
+          <h4>Made with</h4>
+          <ul class="footer-stack-list">
+            <li><i class="fa-solid fa-bolt" aria-hidden="true"></i> FastAPI</li>
+            <li><i class="fa-solid fa-database" aria-hidden="true"></i> ChromaDB</li>
+            <li><i class="fa-solid fa-diagram-project" aria-hidden="true"></i> Sentence Transformers</li>
+            <li><i class="fa-solid fa-microchip" aria-hidden="true"></i> Groq</li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Frontend</h4>
+          <ul class="footer-stack-list">
+            <li><i class="fa-brands fa-html5" aria-hidden="true"></i> HTML5</li>
+            <li><i class="fa-brands fa-css3-alt" aria-hidden="true"></i> CSS3</li>
+            <li><i class="fa-brands fa-square-js" aria-hidden="true"></i> Vanilla JavaScript</li>
+          </ul>
+        </div>
+
+        <div class="footer-col footer-social">
+          <h4>Connect</h4>
+          <div class="footer-social-icons">
+            <a href="https://github.com/adri-chak" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+              <i class="fa-brands fa-github" aria-hidden="true"></i>
+            </a>
+            <a href="https://www.linkedin.com/in/adrija-chakraborty-b62a73247/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+              <i class="fa-brands fa-linkedin" aria-hidden="true"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© <span id="footer-year"></span> PaperLens AI. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <!-- ================= TOAST CONTAINER ================= -->
+    <div class="toast-container" id="toast-container" role="status" aria-live="polite"></div>
+
+    <script src="./script.js"></script>
+  </body>
+</html>
