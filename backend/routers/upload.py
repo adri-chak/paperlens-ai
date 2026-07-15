@@ -12,8 +12,10 @@ from backend.services.chroma_service import ChromaService
 
 router = APIRouter()
 
-embedder = EmbeddingService()
-vector_db = ChromaService()
+from backend.core.services import (
+    embedding_service,
+    vector_db,
+)
 
 
 @router.post("/upload")
@@ -35,7 +37,7 @@ async def upload_pdf(file: UploadFile = File(...)):
         extracted["pages"]
     )
 
-    embeddings = embedder.embed_chunks(chunks)
+    embeddings = embedding_service.embed_chunks(chunks)
 
     vector_db.add_document(
         file.filename,

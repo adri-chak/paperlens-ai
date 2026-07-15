@@ -5,8 +5,9 @@ from backend.services.chroma_service import ChromaService
 class Retriever:
 
     def __init__(self):
-        self.embedder = EmbeddingService()
-        self.vector_db = ChromaService()
+        from backend.core.services import (embedding_service,vector_db,)
+        self.embedder = embedding_service
+        self.vector_db = vector_db
 
     def retrieve(self, query: str, top_k: int = 5):
 
