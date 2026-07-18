@@ -58,3 +58,12 @@ class ChromaService:
     def total_chunks(self):
 
         return self.collection.count()
+    
+    def total_documents(self):
+
+        return len(
+            set(
+                metadata["source"]
+                for metadata in self.collection.get()["metadatas"]
+            )
+        )

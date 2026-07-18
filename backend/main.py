@@ -3,6 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from backend.routers.upload import router as upload_router
 from backend.routers.chat import router as chat_router
+from backend.routers.system import router as system_router
+
 
 app = FastAPI(
     title="PaperLens AI",
@@ -20,6 +22,7 @@ app.add_middleware(
 
 app.include_router(upload_router)
 app.include_router(chat_router)
+app.include_router(system_router)
 
 
 @app.get("/")
