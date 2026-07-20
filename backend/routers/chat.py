@@ -33,7 +33,13 @@ def chat(request: ChatRequest):
     chunks = retriever.retrieve(request.question)
 
     context = "\n\n".join(
-        chunk["text"]
+        f"""
+    Source: {chunk['source']}
+    Page: {chunk['page']}
+    Similarity: {chunk['score']}
+
+    {chunk['text']}
+    """
         for chunk in chunks
     )
 
@@ -56,11 +62,26 @@ def chat(request: ChatRequest):
         for chunk in chunks
     ]
 
-    return ChatResponse(
-        question=request.question,
-        answer=answer,
-        model=GROQ_MODEL,
-        retrieved_chunks=len(chunks),
-        response_time=elapsed,
-        sources=sources
+    from backend.models.responses import (
+        ChatResponse,
+        SourceResponse,
+        RetrievalQuality,
     )
+
+    return ChatResponse(
+    question=request.question,
+    answer=answer,
+    model=GROQ_MODEL,
+    retrieved_chunks=len(chunks),
+    response_time=elapsed,
+
+    retrieval_quality=RetrievalQuality(
+        chunks_used=len(chunks),
+        average_similarity=round(
+            sum(chunk["score"] for chunk in chunks) / len(chunks),
+            3,
+        ) if chunks else 0,
+    ),
+
+    sources=sources,
+)

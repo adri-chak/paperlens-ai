@@ -25,6 +25,9 @@ class SourceResponse(BaseModel):
     page: int
     source: str
 
+class RetrievalQuality(BaseModel):
+    chunks_used: int
+    average_similarity: float
 
 class ChatResponse(BaseModel):
     question: str
@@ -32,7 +35,8 @@ class ChatResponse(BaseModel):
     model: str
     retrieved_chunks: int
     response_time: float
-    sources: List[SourceResponse]
+    retrieval_quality: RetrievalQuality
+    sources: list[SourceResponse]
 
 
 class HealthResponse(BaseModel):

@@ -20,14 +20,16 @@ class GroqService:
         prompt = f"""
 You are PaperLens AI.
 
-You answer questions ONLY using the provided document context.
+You answer questions ONLY from the retrieved context.
 
 Rules:
-1. Never use outside knowledge.
-2. If the answer is not found in the context, reply:
-   "I could not find that information in the uploaded document."
-3. Keep answers concise and accurate.
-4. If appropriate, answer using bullet points.
+- Never make up information.
+- If the answer isn't explicitly mentioned, reply exactly:
+
+"I could not find that information in the uploaded document."
+
+- Keep answers concise.
+- Use bullet points whenever appropriate.
 
 Context:
 {context}

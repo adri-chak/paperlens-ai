@@ -1,39 +1,62 @@
-from backend.services.embedding_service import EmbeddingService
-from backend.services.chroma_service import ChromaService
+from backend.core.services import (
+    embedding_service,
+    vector_db,
+)
 
 
 class Retriever:
 
-    def __init__(self):
-        from backend.core.services import (embedding_service,vector_db,)
-        self.embedder = embedding_service
-        self.vector_db = vector_db
+    def retrieve(
+        self,
+        question: str,
+        top_k: int = 5,
+        similarity_threshold: float = 1.2,
+    ):
 
-    def retrieve(self, query: str, top_k: int = 5):
-
-        query_embedding = self.embedder.model.encode(
-            query,
-            convert_to_numpy=True
+        question_embedding = embedding_service.model.encode(
+            question
         ).tolist()
 
-        results = self.vector_db.collection.query(
-            query_embeddings=[query_embedding],
-            n_results=top_k
+        results = vector_db.collection.query(
+            query_embeddings=[question_embedding],
+            n_results=top_k * 2,
         )
-
-        retrieved_chunks = []
 
         documents = results["documents"][0]
         metadatas = results["metadatas"][0]
+        distances = results["distances"][0]
 
-        for doc, meta in zip(documents, metadatas):
+        seen = set()
+        retrieved = []
 
-            retrieved_chunks.append(
+        for doc, meta, distance in zip(
+            documents,
+            metadatas,
+            distances,
+        ):
+
+            if distance > similarity_threshold:
+                continue
+
+            key = (meta["source"], meta["page"], doc[:120])
+
+            if key in seen:
+                continue
+
+            seen.add(key)
+
+            retrieved.append(
                 {
                     "text": doc,
                     "page": meta["page"],
-                    "source": meta["source"]
+                    "source": meta["source"],
+                    "score": round(1 - distance, 3),
                 }
             )
 
-        return retrieved_chunks
+        retrieved.sort(
+            key=lambda x: x["score"],
+            reverse=True,
+        )
+
+        return retrieved

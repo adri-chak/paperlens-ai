@@ -448,25 +448,36 @@
   }
 
   function handleUploadSuccess(data, file) {
-    showDropzoneState('success');
-    successFilenameEl.textContent = data.filename || file.name;
+
+    showDropzoneState("success");
+
+    const documentInfo = data.document;
+    const databaseInfo = data.database;
+
+    successFilenameEl.textContent = documentInfo.name;
 
     state.document = {
-      filename: data.filename || file.name,
-      pages: data.pages,
-      chunks: data.chunks_created,
-      embeddingDim: data.embedding_dimension,
-      vectors: data.stored_vectors,
+        filename: documentInfo.name,
+        pages: documentInfo.pages,
+        chunks: documentInfo.chunks,
+        embeddingDim: documentInfo.embedding_dimension,
+        vectors: databaseInfo.vectors
     };
 
     populateStats(state.document);
+
     populateSidebarDoc(state.document, file);
+
     enableChat(state.document);
 
-    showToast('success', `${state.document.filename} indexed and ready to query.`, {
-      title: 'Document ready',
-    });
-  }
+    showToast(
+        "success",
+        `${state.document.filename} indexed successfully.`,
+        {
+            title: "Upload Complete"
+        }
+    );
+}
 
   function populateStats(doc) {
     statsGrid.classList.remove('is-hidden');
